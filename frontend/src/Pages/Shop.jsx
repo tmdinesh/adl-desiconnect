@@ -14,7 +14,7 @@ const Shop = () => {
     fetch(`${process.env.REACT_APP_API_URL}/popularinwomen`) 
             .then((res) => res.json()) 
             .then((data) => setPopular(data))
-    fetch('http://localhost:4000/newcollections') 
+    fetch(`${process.env.REACT_APP_API_URL}/newcollections`) 
             .then((res) => res.json()) 
             .then((data) => setNewCollection(data))
     }
