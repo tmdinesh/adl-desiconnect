@@ -11,7 +11,7 @@ const Shop = () => {
   const [newcollection, setNewCollection] = useState([]);
 
   const fetchInfo = () => { 
-    fetch('http://localhost:4000/popularinwomen') 
+    fetch(`${process.env.REACT_APP_API_URL}/popularinwomen`) 
             .then((res) => res.json()) 
             .then((data) => setPopular(data))
     fetch('http://localhost:4000/newcollections') 
