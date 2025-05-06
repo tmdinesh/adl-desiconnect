@@ -11,11 +11,12 @@ app.use(express.json());
 app.use(cors());
 
 // Database Connection With MongoDB
-mongoose.connect("mongodb+srv://dineshcambridge:dinesh2504@cluster0.rxovx4r.mongodb.net/ecommerce?retryWrites=true&w=majority", {
+// Database Connection With MongoDB
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 10000, // 10s is a good balance
-  socketTimeoutMS: 45000, // timeout for long queries
+  socketTimeoutMS: 45000,          // timeout for long queries
 })
 .then(() => console.log("✅ MongoDB connected"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
