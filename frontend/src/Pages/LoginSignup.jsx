@@ -3,93 +3,85 @@ import "./CSS/LoginSignup.css";
 
 const LoginSignup = () => {
   const [state, setState] = useState("Login");
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [errors, setErrors] = useState({});
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on change
   };
 
   const validateForm = () => {
+    const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.email.trim()) {
-      alert("Email is required.");
-      return false;
+    if (state === "Sign Up" && !formData.username.trim()) {
+      newErrors.username = "Name is required.";
     }
 
-    if (!emailRegex.test(formData.email)) {
-      alert("Please enter a valid email address.");
-      return false;
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required.";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Enter a valid email.";
     }
 
     if (!formData.password.trim()) {
-      alert("Password is required.");
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      alert("Password must be at least 6 characters long.");
-      return false;
+      newErrors.password = "Password is required.";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters.";
     }
 
     const checkbox = document.getElementById("agree-checkbox");
     if (checkbox && !checkbox.checked) {
-      alert("You must agree to the terms and privacy policy.");
-      return false;
+      newErrors.agree = "You must agree to the terms.";
     }
 
-    return true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const login = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
-        method: "POST",
-        headers: {
-          Accept: "application/form-data",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
+    let dataObj;
+    await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+      method: "POST",
+      headers: {
+        Accept: "application/form-data",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        dataObj = data;
+        if (dataObj.success) {
+          localStorage.setItem("auth-token", dataObj.token);
+          window.location.replace("/");
+        } else {
+          setErrors({ form: dataObj.errors });
+        }
       });
-
-      const dataObj = await response.json();
-      if (dataObj.success) {
-        localStorage.setItem("auth-token", dataObj.token);
-        window.location.replace("/");
-      } else {
-        alert(dataObj.errors);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
-    }
   };
 
   const signup = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
-        method: "POST",
-        headers: {
-          Accept: "application/form-data",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
+    let dataObj;
+    await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
+      method: "POST",
+      headers: {
+        Accept: "application/form-data",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        dataObj = data;
+        if (dataObj.success) {
+          localStorage.setItem("auth-token", dataObj.token);
+          window.location.replace("/");
+        } else {
+          setErrors({ form: dataObj.errors });
+        }
       });
-
-      const dataObj = await response.json();
-      if (dataObj.success) {
-        localStorage.setItem("auth-token", dataObj.token);
-        window.location.replace("/");
-      } else {
-        alert(dataObj.errors);
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Something went wrong. Please try again.");
-    }
   };
 
   return (
@@ -97,6 +89,18 @@ const LoginSignup = () => {
       <div className="loginsignup-container">
         <h1>{state}</h1>
         <div className="loginsignup-fields">
+          {state === "Sign Up" && (
+            <>
+              <input
+                type="text"
+                placeholder="Your name"
+                name="username"
+                value={formData.username}
+                onChange={changeHandler}
+              />
+              {errors.username && <p className="error">{errors.username}</p>}
+            </>
+          )}
           <input
             type="email"
             placeholder="Email address"
@@ -104,6 +108,8 @@ const LoginSignup = () => {
             value={formData.email}
             onChange={changeHandler}
           />
+          {errors.email && <p className="error">{errors.email}</p>}
+
           <input
             type="password"
             placeholder="Password"
@@ -111,12 +117,16 @@ const LoginSignup = () => {
             value={formData.password}
             onChange={changeHandler}
           />
+          {errors.password && <p className="error">{errors.password}</p>}
         </div>
 
         <div className="loginsignup-agree">
           <input type="checkbox" id="agree-checkbox" />
           <p>By continuing, I agree to the terms of use & privacy policy.</p>
+          {errors.agree && <p className="error">{errors.agree}</p>}
         </div>
+
+        {errors.form && <p className="error">{errors.form}</p>}
 
         <button
           onClick={() => {
@@ -131,12 +141,12 @@ const LoginSignup = () => {
         {state === "Login" ? (
           <p className="loginsignup-login">
             Create an account?{" "}
-            <span onClick={() => setState("Sign Up")}>Click here</span>
+            <span onClick={() => { setState("Sign Up"); setErrors({}); }}>Click here</span>
           </p>
         ) : (
           <p className="loginsignup-login">
             Already have an account?{" "}
-            <span onClick={() => setState("Login")}>Login here</span>
+            <span onClick={() => { setState("Login"); setErrors({}); }}>Login here</span>
           </p>
         )}
       </div>
