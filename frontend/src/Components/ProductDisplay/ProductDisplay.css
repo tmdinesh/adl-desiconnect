@@ -159,3 +159,19 @@
         height: 300px;
     }
 }
+
+.productdisplay-reviews {
+  margin-top: 30px;
+}
+
+.productdisplay-reviews h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.productdisplay-review {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #ccc;
+}
