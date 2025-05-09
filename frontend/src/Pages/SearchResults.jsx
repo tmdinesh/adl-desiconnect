@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
-import Item from '../Components/Item'; // reuse from category pages
-import './CSS/ShopCategory.css'; // reuse your category layout CSS
+import Item from '../Components/Item';
+import './CSS/ShopCategory.css'; // ✅ reuse your existing styles
 
 const SearchResults = () => {
   const { all_product } = useContext(ShopContext);
@@ -15,13 +15,28 @@ const SearchResults = () => {
   );
 
   return (
-    <div className="category">
-      <h2 className="category-heading">Search Results for "{query}"</h2>
-      {filteredProducts.length === 0 ? (
-        <p style={{ padding: "1rem" }}>No products found.</p>
-      ) : (
-        <div className="category-products">
-          {filteredProducts.map((product) => (
+    <div className="shopcategory">
+      {/* Optional banner if you want to show */}
+      {/* <img className="shopcategory-banner" src="/path-to-search-banner.jpg" alt="search-banner" /> */}
+
+      <div className="shopcategory-indexSort">
+        <p>
+          Showing results for <span>"{query}"</span>
+        </p>
+        <div className="shopcategory-sort">
+          Sort by: <select>
+            <option value="default">Default</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="shopcategory-products">
+        {filteredProducts.length === 0 ? (
+          <p>No products found.</p>
+        ) : (
+          filteredProducts.map((product) => (
             <Item
               key={product.id}
               id={product.id}
@@ -30,9 +45,9 @@ const SearchResults = () => {
               new_price={product.new_price}
               old_price={product.old_price}
             />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };
