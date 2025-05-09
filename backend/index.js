@@ -5,18 +5,17 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
 
 // Database Connection With MongoDB
-// Database Connection With MongoDB
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect("mongodb+srv://dineshcambridge:dinesh2504@cluster0.rxovx4r.mongodb.net/ecommerce?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 10000, // 10s is a good balance
-  socketTimeoutMS: 45000,          // timeout for long queries
+  socketTimeoutMS: 45000, // timeout for long queries
 })
 .then(() => console.log("✅ MongoDB connected"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
@@ -85,6 +84,18 @@ const Product = mongoose.model("Product", {
   avilable: { type: Boolean, default: true },
 });
 
+const Seller = mongoose.model("Seller", {
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  businessName: String,
+  warehouseAddress: String,
+  businessAddress: String,
+  zipCode: String,
+  phone: String,
+  gst: String,
+  createdAt: { type: Date, default: Date.now }
+});
 
 // ROOT API Route For Testing
 app.get("/", (req, res) => {
@@ -150,6 +161,55 @@ app.post('/signup', async (req, res) => {
   res.json({ success, token })
 })
 
+app.post('/seller/signup', async (req, res) => {
+  console.log("Seller Sign Up");
+  const {
+    name,
+    email,
+    password,
+    businessName,
+    warehouseAddress,
+    businessAddress,
+    zipCode,
+    phone,
+    gst
+  } = req.body;
+
+  let existing = await Seller.findOne({ email });
+  if (existing) {
+    return res.status(400).json({ success: false, errors: "Seller already registered with this email" });
+  }
+
+  const seller = new Seller({
+    name,
+    email,
+    password,
+    businessName,
+    warehouseAddress,
+    businessAddress,
+    zipCode,
+    phone,
+    gst
+  });
+
+  await seller.save();
+
+  const token = jwt.sign({ user: { id: seller._id } }, "secret_ecom");
+  res.json({ success: true, token });
+});
+
+app.post('/seller/login', async (req, res) => {
+  console.log("Seller Login");
+  const { email, password } = req.body;
+
+  const seller = await Seller.findOne({ email });
+  if (!seller || seller.password !== password) {
+    return res.status(400).json({ success: false, errors: "Invalid email or password" });
+  }
+
+  const token = jwt.sign({ user: { id: seller._id } }, "secret_ecom");
+  res.json({ success: true, token });
+});
 
 // endpoint for getting all products data
 app.get("/allproducts", async (req, res) => {
