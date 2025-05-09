@@ -3,152 +3,149 @@ import "./CSS/LoginSignup.css";
 
 const LoginSignup = () => {
   const [state, setState] = useState("Login");
-  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    businessName: "",
+    email: "",
+    password: "",
+    address: "",
+    phone: "",
+    gst: ""
+  });
   const [errors, setErrors] = useState({});
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on change
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (state === "Sign Up" && !formData.username.trim()) {
-      newErrors.username = "Name is required.";
+  const validate = () => {
+    const errs = {};
+    if (state === "Signup") {
+      if (!formData.businessName.trim()) errs.businessName = "Business name is required";
+      if (!formData.address.trim()) errs.address = "Business address is required";
+      if (!formData.phone.trim()) errs.phone = "Phone number is required";
+      if (!formData.gst.trim()) errs.gst = "GST number is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required.";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Enter a valid email.";
+      errs.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errs.email = "Email is invalid";
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = "Password is required.";
+      errs.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters.";
+      errs.password = "Password must be at least 6 characters";
     }
 
-    const checkbox = document.getElementById("agree-checkbox");
-    if (checkbox && !checkbox.checked) {
-      newErrors.agree = "You must agree to the terms.";
+    return errs;
+  };
+
+  const handleSubmit = async () => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length !== 0) {
+      setErrors(validationErrors);
+      return;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const login = async () => {
-    let dataObj;
-    await fetch(`${process.env.REACT_APP_API_URL}/login`, {
-      method: "POST",
-      headers: {
-        Accept: "application/form-data",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        dataObj = data;
-        if (dataObj.success) {
-          localStorage.setItem("auth-token", dataObj.token);
-          window.location.replace("/");
-        } else {
-          setErrors({ form: dataObj.errors });
-        }
+    const url = `${process.env.REACT_APP_API_URL}/seller/${state.toLowerCase()}`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-  };
+      const data = await response.json();
 
-  const signup = async () => {
-    let dataObj;
-    await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
-      method: "POST",
-      headers: {
-        Accept: "application/form-data",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        dataObj = data;
-        if (dataObj.success) {
-          localStorage.setItem("auth-token", dataObj.token);
-          window.location.replace("/");
-        } else {
-          setErrors({ form: dataObj.errors });
-        }
-      });
+      if (data.success) {
+        localStorage.setItem("auth-token", data.token);
+        window.location.replace("/seller/dashboard");
+      } else {
+        alert(data.errors || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("❌ Error during authentication:", err);
+      alert("Failed to connect to the server.");
+    }
   };
 
   return (
     <div className="loginsignup">
       <div className="loginsignup-container">
-        <h1>{state}</h1>
-        <div className="loginsignup-fields">
-          {state === "Sign Up" && (
-            <>
-              <input
-                type="text"
-                placeholder="Your name"
-                name="username"
-                value={formData.username}
-                onChange={changeHandler}
-              />
-              {errors.username && <p className="error">{errors.username}</p>}
-            </>
-          )}
-          <input
-            type="email"
-            placeholder="Email address"
-            name="email"
-            value={formData.email}
-            onChange={changeHandler}
-          />
-          {errors.email && <p className="error">{errors.email}</p>}
+        <h2>{state === "Login" ? "Seller Login" : "Seller Registration"}</h2>
 
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={formData.password}
-            onChange={changeHandler}
-          />
-          {errors.password && <p className="error">{errors.password}</p>}
-        </div>
+        {state === "Signup" && (
+          <>
+            <input
+              type="text"
+              name="businessName"
+              placeholder="Business Name"
+              value={formData.businessName}
+              onChange={changeHandler}
+            />
+            {errors.businessName && <p className="form-error">{errors.businessName}</p>}
 
-        <div className="loginsignup-agree">
-          <input type="checkbox" id="agree-checkbox" />
-          <p>By continuing, I agree to the terms of use & privacy policy.</p>
-          {errors.agree && <p className="error">{errors.agree}</p>}
-        </div>
+            <input
+              type="text"
+              name="address"
+              placeholder="Business Address"
+              value={formData.address}
+              onChange={changeHandler}
+            />
+            {errors.address && <p className="form-error">{errors.address}</p>}
 
-        {errors.form && <p className="error">{errors.form}</p>}
+            <input
+              type="text"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={changeHandler}
+            />
+            {errors.phone && <p className="form-error">{errors.phone}</p>}
 
-        <button
-          onClick={() => {
-            if (validateForm()) {
-              state === "Login" ? login() : signup();
-            }
-          }}
-        >
-          Continue
+            <input
+              type="text"
+              name="gst"
+              placeholder="GST Number"
+              value={formData.gst}
+              onChange={changeHandler}
+            />
+            {errors.gst && <p className="form-error">{errors.gst}</p>}
+          </>
+        )}
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={changeHandler}
+        />
+        {errors.email && <p className="form-error">{errors.email}</p>}
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={changeHandler}
+        />
+        {errors.password && <p className="form-error">{errors.password}</p>}
+
+        <button onClick={handleSubmit}>
+          {state === "Login" ? "Login" : "Register Business"}
         </button>
 
-        {state === "Login" ? (
-          <p className="loginsignup-login">
-            Create an account?{" "}
-            <span onClick={() => { setState("Sign Up"); setErrors({}); }}>Click here</span>
-          </p>
-        ) : (
-          <p className="loginsignup-login">
-            Already have an account?{" "}
-            <span onClick={() => { setState("Login"); setErrors({}); }}>Login here</span>
-          </p>
-        )}
+        <p>
+          {state === "Login" ? "Don't have a seller account?" : "Already registered?"}{" "}
+          <span onClick={() => setState(state === "Login" ? "Signup" : "Login")}>
+            {state === "Login" ? "Signup" : "Login"}
+          </span>
+        </p>
       </div>
     </div>
   );
