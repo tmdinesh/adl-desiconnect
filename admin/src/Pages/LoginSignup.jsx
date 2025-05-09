@@ -83,34 +83,19 @@ const LoginSignup = () => {
       <div className="loginsignup-container">
         <h1>{state} (Seller)</h1>
         <div className="loginsignup-fields">
-          <input type="text" name="username" placeholder="Your Name" value={formData.username} onChange={changeHandler} />
-          {errors.username && <p className="error">{errors.username}</p>}
-
-          <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={changeHandler} />
-          {errors.email && <p className="error">{errors.email}</p>}
-
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={changeHandler} />
-          {errors.password && <p className="error">{errors.password}</p>}
+          <input name="username" placeholder="Your Name" value={formData.username} onChange={changeHandler} />
+          <input name="email" placeholder="Email Address" value={formData.email} onChange={changeHandler} />
+          <input name="password" type="password" placeholder="Password" value={formData.password} onChange={changeHandler} />
 
           {state === "Sign Up" && (
             <>
-              <input type="text" name="businessName" placeholder="Business Name" value={formData.businessName} onChange={changeHandler} />
-              {errors.businessName && <p className="error">{errors.businessName}</p>}
-
-              <input type="text" name="warehouseAddress" placeholder="Warehouse Address" value={formData.warehouseAddress} onChange={changeHandler} />
-              {errors.warehouseAddress && <p className="error">{errors.warehouseAddress}</p>}
-
-              <input type="text" name="businessAddress" placeholder="Business Address" value={formData.businessAddress} onChange={changeHandler} />
-              {errors.businessAddress && <p className="error">{errors.businessAddress}</p>}
-
-              <input type="text" name="zipCode" placeholder="Zip Code" value={formData.zipCode} onChange={changeHandler} />
-              {errors.zipCode && <p className="error">{errors.zipCode}</p>}
-
-              <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={changeHandler} />
-              {errors.phone && <p className="error">{errors.phone}</p>}
-
-              <input type="text" name="gst" placeholder="GST Number" value={formData.gst} onChange={changeHandler} />
-              {errors.gst && <p className="error">{errors.gst}</p>}
+              <div className="section-label">Business Details</div>
+              <input name="businessName" placeholder="Business Name (as in GST)" value={formData.businessName} onChange={changeHandler} />
+              <input name="warehouseAddress" placeholder="Warehouse Address" value={formData.warehouseAddress} onChange={changeHandler} />
+              <input name="businessAddress" placeholder="Business Address" value={formData.businessAddress} onChange={changeHandler} />
+              <input name="zipCode" placeholder="Zip Code" value={formData.zipCode} onChange={changeHandler} />
+              <input name="phone" placeholder="Phone Number" value={formData.phone} onChange={changeHandler} />
+              <input name="gst" placeholder="GST Number" value={formData.gst} onChange={changeHandler} />
             </>
           )}
         </div>
@@ -118,28 +103,23 @@ const LoginSignup = () => {
         <div className="loginsignup-agree">
           <input type="checkbox" id="agree-checkbox" />
           <p>By continuing, I agree to the terms of use & privacy policy.</p>
-          {errors.agree && <p className="error">{errors.agree}</p>}
         </div>
 
-        {errors.form && <p className="error">{errors.form}</p>}
+        {Object.values(errors).map((err, i) => (
+          <p className="error" key={i}>{err}</p>
+        ))}
 
-        <button onClick={() => {
-          if (validateForm()) {
-            state === "Login" ? login() : signup();
-          }
-        }}>
+        <button onClick={() => validateForm() && (state === "Login" ? login() : signup())}>
           Continue
         </button>
 
-        {state === "Login" ? (
-          <p className="loginsignup-login">
-            Don’t have an account? <span onClick={() => { setState("Sign Up"); setErrors({}); }}>Sign up</span>
-          </p>
-        ) : (
-          <p className="loginsignup-login">
-            Already registered? <span onClick={() => { setState("Login"); setErrors({}); }}>Login</span>
-          </p>
-        )}
+        <p className="loginsignup-login">
+          {state === "Login" ? (
+            <>Create an account? <span onClick={() => { setState("Sign Up"); setErrors({}); }}>Sign Up</span></>
+          ) : (
+            <>Already have an account? <span onClick={() => { setState("Login"); setErrors({}); }}>Login</span></>
+          )}
+        </p>
       </div>
     </div>
   );
