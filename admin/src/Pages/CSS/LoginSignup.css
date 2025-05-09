@@ -1,0 +1,41 @@
+/* Group related fields together for seller sign-up */
+.loginsignup-fields .group-label {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Allow multiline layout on very small screens */
+@media (max-width: 400px) {
+  .loginsignup-fields input {
+    font-size: 14px;
+    height: 45px;
+  }
+  .loginsignup-container {
+    padding: 20px 15px;
+  }
+  .loginsignup-agree {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Improve spacing for multiple error messages */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin: 4px 0 0 4px;
+}
+
+/* Optional: Separate sections visually */
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset + fieldset {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
