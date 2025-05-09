@@ -1,54 +1,89 @@
 .loginsignup {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 40px 20px;
+  background-color: #f9f9f9;
   min-height: 100vh;
-  background-color: #f5f6fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .loginsignup-container {
   width: 100%;
-  max-width: 420px;
-  padding: 2rem;
-  background: white;
+  max-width: 600px;
+  background: #fff;
+  padding: 2rem 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
 }
 
 .loginsignup-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
   font-size: 1.8rem;
+  margin-bottom: 1.5rem;
   color: #333;
+  text-align: center;
 }
 
-.loginsignup-container input {
+.section-title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #444;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.loginsignup-container input[type="text"],
+.loginsignup-container input[type="email"],
+.loginsignup-container input[type="password"] {
   width: 100%;
-  margin-bottom: 0.75rem;
-  padding: 12px;
+  padding: 10px 14px;
   font-size: 1rem;
+  margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   transition: border-color 0.2s ease;
 }
 
 .loginsignup-container input:focus {
-  outline: none;
   border-color: #007bff;
+  outline: none;
+}
+
+.form-error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.terms {
+  font-size: 0.9rem;
+  color: #555;
 }
 
 .loginsignup-container button {
   width: 100%;
   padding: 12px;
   font-size: 1rem;
-  font-weight: 600;
-  background: #007bff;
+  font-weight: bold;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  margin-top: 10px;
 }
 
 .loginsignup-container button:hover {
@@ -57,7 +92,7 @@
 
 .loginsignup-container p {
   text-align: center;
-  margin-top: 1.25rem;
+  margin-top: 1rem;
   font-size: 0.95rem;
 }
 
@@ -65,11 +100,5 @@
   color: #007bff;
   cursor: pointer;
   font-weight: bold;
-  margin-left: 4px;
-}
-
-.form-error {
-  color: #dc3545;
-  font-size: 0.85rem;
-  margin: -10px 0 10px;
+  margin-left: 5px;
 }
